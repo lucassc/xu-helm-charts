@@ -16,7 +16,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: Build Helm
+  displayName: Build Helm and Push Chart
   jobs:
   - job: Build
     displayName: Build
@@ -45,7 +45,7 @@ stages:
         chartVersion: '$(CHART_VERSION)'
         
     - bash: |
-        helm push $(registryServerName)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
+        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(registryServerName)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
       failOnStderr: true
       displayName: 'Push Chart'
       
