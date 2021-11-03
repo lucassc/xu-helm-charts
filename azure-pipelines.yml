@@ -45,7 +45,10 @@ stages:
         chartVersion: '$(CHART_VERSION)'
         
     - bash: |
-        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(registryServerName)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
+        echo Azure Container Registry Login
+        echo $(acr.password) | helm registry login $(acr.name).azurecr.io --username $(acr.login) --password-stdin
+        echo Helm push
+        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(acr.name)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
       failOnStderr: true
       displayName: 'Push Chart'
       
