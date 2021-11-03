@@ -21,9 +21,9 @@ stages:
     steps:
     - task: HelmInstaller@0
       inputs:
-        helmVersion: '3.7.1'
+        helmVersion: '3.4.1'
     - bash: |
-        'helm lint ./app-one-api'
+        helm lint ./app-one-api
       failOnStderr: true
-      displayName: 'helm lint'
+      displayName: 'Helm lint'
 
