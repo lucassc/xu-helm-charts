@@ -10,10 +10,11 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  group: acr-variable-group
-  HELM_EXPERIMENTAL_OCI: 1
-  projectName: app-one-api
-  acrName1: $(acrName)
+  - group: acr-variable-group
+  - name: HELM_EXPERIMENTAL_OCI
+    value: 1
+  - name: projectName
+    value: app-one-api
 
 stages:
 - stage: Build
@@ -47,8 +48,8 @@ stages:
         
     - bash: |
         echo Azure Container Registry Login
-        cho teste
-        echo $(acrName1)
+        echo teste
+        echo $(acrName)
         echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
         echo Helm push
         helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(acrName).azurecr.io/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
