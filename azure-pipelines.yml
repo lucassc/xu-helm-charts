@@ -12,7 +12,7 @@ pool:
 variables:
   HELM_EXPERIMENTAL_OCI: 1
   projectName: app-one-api
-  registryServerName: devxuxu.azurecr.io
+  acrName1: $(acrName)
 
 stages:
 - stage: Build
@@ -46,7 +46,7 @@ stages:
         
     - bash: |
         echo Azure Container Registry Login
-        echo $(acrName)
+        echo $(acrName1)
         echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
         echo Helm push
         helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(acrName).azurecr.io/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
