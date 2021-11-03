@@ -1,0 +1,29 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  HELM_EXPERIMENTAL_OCI: 1
+
+stages:
+- stage: Build
+  displayName: Build Helm
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: HelmInstaller@0
+      inputs:
+        helmVersion: '3.7.1'
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'None'
+        command: 'lint ./app-one-api'
+
