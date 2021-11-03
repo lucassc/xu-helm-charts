@@ -22,8 +22,7 @@ stages:
     - task: HelmInstaller@0
       inputs:
         helmVersion: '3.7.1'
-    - task: HelmDeploy@0
+    - task: Bash@3
       inputs:
-        connectionType: 'None'
-        command: 'lint ./app-one-api'
+        arguments: 'helm lint ./app-one-api'
 
