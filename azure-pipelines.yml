@@ -1,0 +1,57 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: acr-variable-group
+  - name: HELM_EXPERIMENTAL_OCI
+    value: 1
+  - name: projectName
+    value: app-one-api
+
+stages:
+- stage: Build
+  displayName: Build Helm and Push Chart
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: HelmInstaller@0
+      inputs:
+        helmVersion: '3.4.1'
+
+    - bash: |
+        helm lint ./$(projectName)
+      failOnStderr: true
+      displayName: 'Helm lint'
+
+    - bash: |
+        CHART_VERSION="$(cat ./$(projectName)/Chart.yaml | awk '/version:/ {print $2}')"
+        echo "##vso[task.setvariable variable=CHART_VERSION]$CHART_VERSION"
+        echo Chart version $CHART_VERSION
+      failOnStderr: true
+      displayName: 'Extract Helm Chat version'
+
+    - task: HelmDeploy@0
+      displayName: Helm package
+      inputs:
+        command: 'package'
+        chartPath: './$(projectName)'
+        chartVersion: '$(CHART_VERSION)'
+        
+    - bash: |
+        echo Azure Container Registry Login
+        echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
+        echo Helm push
+        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz oci://$(acrName).azurecr.io/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
+      failOnStderr: true
+      displayName: 'Push Chart'
+      
+
