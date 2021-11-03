@@ -48,11 +48,9 @@ stages:
         
     - bash: |
         echo Azure Container Registry Login
-        echo teste
-        echo $(acrName)
         echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
         echo Helm push
-        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(acrName).azurecr.io/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
+        helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz oci://$(acrName).azurecr.io/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
       failOnStderr: true
       displayName: 'Push Chart'
       
