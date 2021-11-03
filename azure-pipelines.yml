@@ -46,6 +46,7 @@ stages:
         
     - bash: |
         echo Azure Container Registry Login
+        echo $(acrName)
         echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
         echo Helm push
         helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz $(acrName)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
