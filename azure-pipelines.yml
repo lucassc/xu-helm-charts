@@ -42,10 +42,10 @@ stages:
       inputs:
         command: 'package'
         chartPath: './$(projectName)'
-        chartVersion: '$CHART_VERSION'
+        chartVersion: '$(CHART_VERSION)'
         
     - bash: |
-        helm push $(registryServerName)/xu-helm/helm-charts/$(projectName):$CHART_VERSION
+        helm push $(registryServerName)/xu-helm/helm-charts/$(projectName):$(CHART_VERSION)
       failOnStderr: true
       displayName: 'Push Chart'
       
