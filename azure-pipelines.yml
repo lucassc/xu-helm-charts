@@ -23,7 +23,7 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    - ${{ each projectName in $projects }}:
+    - ${{ each projectName in $(projects) }}:
       - task: HelmInstaller@0
         inputs:
           helmVersion: '3.4.1'
