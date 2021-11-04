@@ -5,9 +5,8 @@ name: app-one-api
 containerRegistry:
   url: devxuxu.azurecr.io
   repository: xu-helm/app-one-api
-  #imageTag: 
 
 service:
   nodePort: 8080
-  port: 8088  
-  type: NodePort  
+  port: 8088
+  type: NodePort

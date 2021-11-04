@@ -5,6 +5,7 @@
 
 trigger:
 - main
+- feature/*
 
 pool:
   vmImage: ubuntu-latest
@@ -13,48 +14,29 @@ variables:
   - group: acr-variable-group
   - name: HELM_EXPERIMENTAL_OCI
     value: 1
-  - name: projects
-    value: [app-one-api, app-one-api]
 
 stages:
 - stage: Package
-  displayName: Build Helm, Package and Push
+  displayName: Helm Package and Push
   jobs:
-  - job: Build
-    displayName: Build
+  - job: Package
+    displayName: Helm Package and Push
     steps:
-    - ${{ each projectName in variables.projects }}:
       - task: HelmInstaller@0
         inputs:
-          helmVersion: '3.4.1'
+          helmVersion: '3.7.1'
+        displayName: Helm Installer
           
       - bash: |
           echo $(acrPassword) | helm registry login $(acrName).azurecr.io --username $(acrUsername) --password-stdin
         failOnStderr: true
         displayName: 'Helm ACR Login'
 
-      - bash: |
-          helm lint ./$(projectName)
-        failOnStderr: true
-        displayName: 'Helm lint - $(projectName)'
-
-      - bash: |
-          CHART_VERSION="$(cat ./$(projectName)/Chart.yaml | awk '/version:/ {print $2}')"
-          echo "##vso[task.setvariable variable=CHART_VERSION]$CHART_VERSION"
-          echo Chart version $CHART_VERSION
-        failOnStderr: true
-        displayName: 'Extract Helm Chat version - $(projectName)'
-
-      - task: HelmDeploy@0
-        displayName: Helm package - $(projectName)
-        inputs:
-          command: 'package'
-          chartPath: './$(projectName)'
-          chartVersion: '$(CHART_VERSION)'
-          
-      - bash: |
-          helm push $(Build.ArtifactStagingDirectory)/$(projectName)-$(CHART_VERSION).tgz oci://$(acrName).azurecr.io/xu-helm/helm-charts
-        failOnStderr: true
-        displayName: 'Push Helm Chart - $(projectName)'
-      
+      - template: ./pipeline-templates/package-push-chart.yml
+        parameters:
+          environments:
+            - qa
+            - prod  
+          projectsName:
+            - app-one-api
 
