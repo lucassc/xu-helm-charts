@@ -14,7 +14,7 @@ variables:
   - name: HELM_EXPERIMENTAL_OCI
     value: 1
   - name: projects
-    value: app-one-api, app-one-api
+    value: [app-one-api, app-one-api]
 
 stages:
 - stage: Package
